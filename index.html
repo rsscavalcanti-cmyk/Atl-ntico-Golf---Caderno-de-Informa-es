@@ -256,120 +256,152 @@
     });
 
     // ===== Dropdown de Engenharia =====
-    const engInfoMap = {
-      medicoes: {
-        titulo: "Medições do Mês",
-        html: `
-          <div class="eng-kpi">
-            <div class="kpi"><b>Medido</b> R$ 412.500,00</div>
-            <div class="kpi"><b>Aprovado</b> R$ 387.200,00</div>
-          </div>
-          <ul>
-            <li>Diferença em análise: R$ 25.300,00</li>
-            <li>Prazo de aprovação: até dia 28</li>
-          </ul>
-        `
-      },
-      aditivos: {
-        titulo: "Aditivos em Negociação",
-        html: `
-          <div class="eng-kpi">
-            <div class="kpi"><b>Qtde</b> 3</div>
-            <div class="kpi"><b>Total</b> R$ 188.000,00</div>
-          </div>
-          <ul>
-            <li>Entrada de energia – cabos e componentes (R$ 92.000) • <i>Em negociação</i></li>
-            <li>Barramentos blindados – diferenças de especificação (R$ 61.000) • <i>Aguardando retorno</i></li>
-            <li>Complementos de automação (R$ 35.000) • <i>Minuta enviada</i></li>
-          </ul>
-        `
-      },
-      custos_extras: {
-        titulo: "Custos Extras Registrados",
-        html: `
-          <ul>
-            <li>Roubos de cabos – Boletins registrados • impacto estimado R$ 28.000</li>
-            <li>Retrabalhos – ajustes em painéis • R$ 7.500</li>
-            <li>Adiantamentos logísticos • R$ 4.200</li>
-          </ul>
-        `
-      },
-      materiais_pendentes: {
-        titulo: "Materiais Críticos Pendentes",
-        html: `
-          <ul>
-            <li><b>Barramentos blindados</b> – sem previsão (responsável: Patrimar)</li>
-            <li><b>Cabos 240 mm²</b> – aguardando liberação de compra</li>
-            <li><b>Bombas de recalque</b> – pendente definição de comando</li>
-          </ul>
-        `
-      },
-      entregas_previstas: {
-        titulo: "Entrega Prevista",
-        html: `
-          <ul>
-            <li>Disjuntores e DPS – chegada prevista: 18/09</li>
-            <li>Leitos e braçadeiras – chegada prevista: 20/09</li>
-            <li>Quadros auxiliares – chegada prevista: 24/09</li>
-          </ul>
-        `
-      },
-      avanco_fisico: {
-        titulo: "Avanço Físico (%)",
-        html: `
-          <div class="eng-kpi">
-            <div class="kpi"><b>Planejado</b> 68%</div>
-            <div class="kpi"><b>Real</b> 63%</div>
-          </div>
-          <ul>
-            <li>Desvio atual: -5 p.p. (principalmente materiais críticos)</li>
-          </ul>
-        `
-      },
-      atividades_criticas: {
-        titulo: "Atividades Críticas da Semana",
-        html: `
-          <ul>
-            <li>Fechamento de eletrocalhas nos pavimentos 3 a 5</li>
-            <li>Passagem de cabos alimentadores (bloco A)</li>
-            <li>Ensaios de continuidade e isolação nas prumadas</li>
-          </ul>
-        `
-      },
-      prazo_est_x_plan: {
-        titulo: "Prazo Estimado x Planejado",
-        html: `
-          <div class="eng-kpi">
-            <div class="kpi"><b>Planejado</b> Dez/25</div>
-            <div class="kpi"><b>Estimado</b> Jan/26</div>
-          </div>
-          <ul>
-            <li>Impactos: materiais críticos e definição de aditivos</li>
-          </ul>
-        `
-      },
-      frentes_paradas: {
-        titulo: "Frentes Paradas",
-        html: `
-          <ul>
-            <li>Casa de bombas – aguardando definição de comando</li>
-            <li>Entrada de energia – pendente compra/fornecimento</li>
-          </ul>
-        `
-      },
-      efetivo_atual: {
-        titulo: "Efetivo Atual",
-        html: `
-          <div class="eng-kpi">
-            <div class="kpi"><b>Total em obra</b> 28</div>
-            <div class="kpi"><b>Terceiros</b> 7</div>
-          </div>
-          <ul>
-            <li>Equipe elétrica: 18 • Montagem: 6 • Apoio/almox: 4</li>
-          </ul>
-        `
-      }
-    };
+    medicoes: {
+    titulo: "Medições do Mês",
+    html: `
+      <div class="eng-kpi">
+        <div class="kpi"><b>Apresentado</b> R$ 835.119,52</div>
+        <div class="kpi"><b>NF Liberada</b> R$ 324.333,27</div>
+      </div>
+      <ul>
+        <li>Contrato principal — Apresentado <b>341.782,98</b> · NF <b>248.042,67</b></li>
+        <li>Reajuste do contrato principal — Apresentado <b>96.222,96</b> · NF <b>14.902,13</b></li>
+        <li>Entrada de energia — Apresentado <b>0,00</b> · NF <b>58.465,24</b></li>
+        <li>Reajuste do contrato de entrada de energia — Apresentado <b>60.113,58</b> · NF <b>2.923,23</b></li>
+        <li>Aditivos c/ desconto especial (pag. integral) — Apresentado <b>337.000,00</b> · NF <b>0,00</b></li>
+      </ul>
+      <ul>
+        <li><b>Total</b>: Apresentado <b>R$ 835.119,52</b> · NF <b>R$ 324.333,27</b> · Diferença <b>R$ 510.786,25</b></li>
+      </ul>
+    `
+  },
+
+  aditivos: {
+    titulo: "Aditivos em Negociação",
+    html: `
+      <ul>
+        <li>1) Ralos do embasamento – parte 2 — <b>PACS-01_2025</b></li>
+        <li>2) Instalação de caixas elétricas e módulos elétricos — <b>PACS-02_2025</b></li>
+        <li>3) Iluminação do térreo externo — <b>PACS-03_2025</b></li>
+        <li>4) Rede externa pluvial — <b>PACS-04_2025</b></li>
+        <li>5) Redutoras de pressão bl3 — <b>PACS-05_2025</b></li>
+        <li>6) Iluminação área dos reservatórios — <b>PACS-06_2025</b></li>
+      </ul>
+      <div class="eng-kpi" style="margin-top:8px;">
+        <div class="kpi" style="grid-column:1 / -1;"><b>Total em negociação</b> R$ 337.000,00</div>
+      </div>
+    `
+  },
+
+  custos_extras: {
+    titulo: "Custos Extras Registrados",
+    html: `
+      <ul>
+        <li>Roubos de cabos — boletins registrados — <b>R$ 95.000,00</b></li>
+        <li>Retrabalhos — ajustes em painéis — <b>R$ 20.000,00</b></li>
+        <li>Recolocação de tomadas e itens roubados — <b>R$ 35.000,00</b></li>
+      </ul>
+      <div class="eng-kpi" style="margin-top:8px;">
+        <div class="kpi" style="grid-column:1 / -1;"><b>Total</b> R$ 150.000,00</div>
+      </div>
+    `
+  },
+
+  materiais_pendentes: {
+    titulo: "Materiais Críticos Pendentes",
+    html: `
+      <ul>
+        <li><b>Barramentos blindados</b> — sem previsão (Patrimar)</li>
+        <li><b>Cabos 240 mm²</b> — aguardando compra (cabo emprestado)</li>
+        <li><b>Painéis ELETROASA</b></li>
+        <li><b>PVC</b> pendente</li>
+        <li><b>PPR</b> — fechamento casa de bombas</li>
+      </ul>
+    `
+  },
+
+  entregas_previstas: {
+    titulo: "Entrega Prevista",
+    html: `
+      <ul>
+        <li>Itens de QDLs</li>
+        <li>PVC e PPR</li>
+        <li>Insumos em geral</li>
+      </ul>
+    `
+  },
+
+  avanco_fisico: {
+    titulo: "Avanço Físico (%)",
+    html: `
+      <div class="eng-kpi">
+        <div class="kpi"><b>Planejado</b> 85%</div>
+        <div class="kpi"><b>Real</b> 70%</div>
+      </div>
+      <ul><li>Desvio atual: <b>-15 p.p.</b></li></ul>
+    `
+  },
+
+  atividades_criticas: {
+    titulo: "Atividades Críticas da Semana",
+    html: `
+      <ul>
+        <li>Entrega de apartamentos (metais e espelhos de tomadas)</li>
+        <li>Redes do subsolo (hidráulica e sanitária)</li>
+        <li>Infraestruturas de áreas comuns</li>
+        <li>Tês de fachada</li>
+        <li>Redutoras bloco 3</li>
+      </ul>
+    `
+  },
+
+  prazo_est_x_plan: {
+    titulo: "Prazo Estimado x Planejado",
+    html: `
+      <div class="eng-kpi">
+        <div class="kpi"><b>Planejado</b> novembro</div>
+        <div class="kpi"><b>Estimado</b> maio/26</div>
+      </div>
+      <ul><li>Atraso aproximado: ~6 meses</li></ul>
+    `
+  },
+
+  frentes_paradas: {
+    titulo: "Frentes Paradas",
+    html: `
+      <ul>
+        <li>Status: <b>a verificar em 15/09</b></li>
+      </ul>
+    `
+  },
+
+  // mantenho aqui um slot para Efetivo Atual (preencha quando tiver os números)
+  efetivo_atual: {
+    titulo: "Efetivo Atual",
+    html: `
+      <ul>
+        <li><i>Não informado</i></li>
+      </ul>
+    `
+  },
+
+  // bloco extra com os "Adicionais identificados" (não negociados) da imagem 3
+  adicionais_identificados: {
+    titulo: "Adicionais identificados (não negociados)",
+    html: `
+      <ul>
+        <li>7) Retrabalhos c/ instalações de gás — <b>PACS-07_2025</b> — <b>R$ 23.998,42</b></li>
+        <li>8) Ajustes barramentos blindados (≈ 50 peças) — <b>PACS-08_2025</b> — <b>R$ 67.412,29</b></li>
+        <li>9) Ajustes redes externas esgoto/elétrica/sist. especiais — <b>PACS-09_2025</b> — <b>R$ 41.888,74</b></li>
+        <li>10) Ajustes no trocador de calor SPA (bloco 2) — <b>PACS-10_2025</b> — <b>R$ 8.866,94</b></li>
+        <li>11) Reservatórios inferiores (boias etc.) — <b>PACS-11_2025</b> — <b>R$ 8.977,96</b></li>
+        <li>12) Drenos em 49 aptos (a detalhar) — <b>PACS-12_2025</b> — (sem valor)</li>
+        <li>10*) Restante cabos furtados/componentes — <i>não apresentado</i></li>
+        <li>11*) Redutoras de pressão bl2 — <i>não apresentado</i></li>
+      </ul>
+    `
+  }
+};
 
     function renderEngInfo() {
       const sel = document.getElementById('engInfoSelect');
