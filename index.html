@@ -21,12 +21,12 @@
     *{ box-sizing:border-box; }
     body{ margin:0; font-family:Arial, Helvetica, sans-serif; background:var(--bg); color:var(--texto); }
 
-    /* Cabeçalho sem tarja (fundo transparente), com linha sutil inferior */
+    /* Cabeçalho sem tarja: fundo transparente e linha sutil inferior */
     header{
       background:transparent; /* removida a tarja azul */
       color:var(--texto);
-      padding:18px 20px; /* um pouco mais de respiro */
-      padding-right:260px; /* espaço para a logo grande à direita */
+      padding:18px 20px; /* respiro vertical */
+      padding-right:300px; /* espaço seguro para a logo grande à direita */
       text-align:center;
       position:relative;
       border-bottom:1px solid var(--borda);
@@ -40,17 +40,18 @@
     }
 
     /* Logo grande e alinhada ao topo direito */
-    .header-logo{ position:absolute; right:20px; top:-30px; height:150px; opacity:.95; display:inline-block; }
+    .header-logo{ position:absolute; right:20px; top:-40px; height:180px; opacity:.98; display:inline-block; }
     .header-logo:hover{ opacity:1; }
     .header-logo img{ height:100%; width:auto; display:block; }
 
-    @media (min-width:600px){
-      .header-logo{ height:180px; top:-40px; }
-      header{ padding-right:300px; }
-      header h1{ font-size:24px; }
+    @media (max-width:900px){
+      header{ padding-right:260px; }
+      .header-logo{ height:150px; top:-30px; }
     }
-    @media (max-width:360px){
+    @media (max-width:480px){
+      header{ padding-right:200px; }
       header h1{ font-size:18px; }
+      .header-logo{ height:120px; top:-20px; }
     }
 
     .container{ padding:10px; }
@@ -73,6 +74,34 @@
     .alert ul{ margin:8px 0 0 18px; }
     .alert li{ margin:6px 0; }
 
+    /* Select e bloco do dropdown de Engenharia */
+    .select-eng{
+      width:100%;
+      padding:12px 14px;
+      border-radius:10px;
+      border:1px solid var(--borda);
+      background:#fff;
+      font-size:15px;
+    }
+    .eng-content{
+      border:1px solid var(--borda);
+      background:#fff;
+      border-radius:12px;
+      padding:14px;
+    }
+    .eng-content h3{
+      margin:0 0 8px 0;
+      font-size:16px;
+      text-transform:uppercase;
+      letter-spacing:.3px;
+      color: var(--texto);
+    }
+    .eng-content ul{ margin:6px 0 0 18px; }
+    .eng-kpi{ display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:10px; margin-top:8px; }
+    .eng-kpi .kpi{ background:#f9fafb; border:1px solid #eef0f2; border-radius:10px; padding:10px; text-align:center; font-size:14px; }
+    .eng-kpi .kpi b{ display:block; font-size:16px; margin-bottom:2px; }
+    @media (max-width:520px){ .eng-kpi{ grid-template-columns:1fr; } }
+
     /* Rodapé discreto */
     footer{ text-align:center; font-size:12px; color:#6b7280; padding:18px 10px 28px; }
     footer span{ opacity:.8; }
@@ -80,7 +109,7 @@
 </head>
 <body>
   <header>
-    <!-- Removido o nome "System Engenharia"; a identidade visual fica apenas no logo -->
+    <!-- Marca textual removida; a identidade fica apenas na logo -->
     <h1>Atlântico Golf - Resumo Financeiro - Setembro/25</h1>
     <!-- Logo clicável no canto direito do cabeçalho -->
     <a class="header-logo" href="https://systemengenharia.com.br/" target="_blank" rel="noopener" aria-label="Abrir site da System Engenharia">
@@ -100,11 +129,11 @@
     <div class="card">
       <div class="btn-group" role="group" aria-label="Resumo principal">
         <div>
-          <button class="btn" onclick="mostrarValor('vApresentado')">Total Apresentado</button>
+          <button class="btn" onclick="mostrarValor('vApresentado')">Medições do Mês</button>
           <div id="vApresentado" class="valor">R$ 835.119,52</div>
         </div>
         <div>
-          <button class="btn" onclick="mostrarValor('vAprovado')">Total Aprovado (NF Liberada)</button>
+          <button class="btn" onclick="mostrarValor('vAprovado')">Total Aprovado (NF)</button>
           <div id="vAprovado" class="valor">R$ 324.333,27</div>
         </div>
         <div>
@@ -118,14 +147,38 @@
       </div>
     </div>
 
-    <!-- 3) Pizza APRESENTADO x APROVADO -->
+    <!-- 3) Campo suspenso – Informações de Engenharia -->
+    <div class="card">
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <label for="engInfoSelect" style="font-weight:600;">Informações de Engenharia</label>
+
+        <select id="engInfoSelect" class="select-eng" aria-label="Selecionar informação de engenharia">
+          <option value="medicoes">Medições do Mês</option>
+          <option value="aditivos">Aditivos em Negociação</option>
+          <option value="custos_extras">Custos Extras Registrados</option>
+          <option value="materiais_pendentes">Materiais Críticos Pendentes</option>
+          <option value="entregas_previstas">Entrega Prevista</option>
+          <optgroup label="Prazo / Produção">
+            <option value="avanco_fisico">Avanço Físico (%)</option>
+            <option value="atividades_criticas">Atividades Críticas da Semana</option>
+            <option value="prazo_est_x_plan">Prazo Estimado x Planejado</option>
+            <option value="frentes_paradas">Frentes Paradas</option>
+          </optgroup>
+          <option value="efetivo_atual">Efetivo Atual</option>
+        </select>
+
+        <div id="engInfoContent" class="eng-content"><!-- preenchido via JS --></div>
+      </div>
+    </div>
+
+    <!-- 4) Pizza APRESENTADO x APROVADO -->
     <div class="card">
       <div class="chart-wrap">
         <canvas id="resumoFinanceiro" aria-label="Gráfico de pizza Apresentado x Aprovado"></canvas>
       </div>
     </div>
 
-    <!-- 4) Pendências Patrimar (logo após a pizza) -->
+    <!-- 5) Pendências Patrimar -->
     <div class="card">
       <div class="alert">
         <strong>Pendências – Patrimar</strong>
@@ -139,7 +192,7 @@
       </div>
     </div>
 
-    <!-- 5) Cronograma crítico (barras) -->
+    <!-- 6) Cronograma crítico (barras) -->
     <div class="card">
       <div class="chart-wrap">
         <canvas id="cronograma" aria-label="Cronograma crítico"></canvas>
@@ -152,11 +205,10 @@
   </footer>
 
   <script>
-    // Totais base (SET/25)
+    // ================= Base =================
     const totalApresentado = 835119.52;
     const totalAprovado = 324333.27; // NF Liberada (Aprovado)
 
-    // Mostrar/ocultar valores dos botões
     function mostrarValor(id){
       const vals = document.querySelectorAll('.valor');
       vals.forEach(el => el.style.display = (el.id === id && el.style.display !== 'block') ? 'block' : 'none');
@@ -203,6 +255,139 @@
       options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' }, title:{ display:true, text:'CRONOGRAMA CRÍTICO', color:varGet('--texto'), font:{ size:18, weight:'bold' }, align:'center' } } }
     });
 
+    // ===== Dropdown de Engenharia =====
+    const engInfoMap = {
+      medicoes: {
+        titulo: "Medições do Mês",
+        html: `
+          <div class="eng-kpi">
+            <div class="kpi"><b>Medido</b> R$ 412.500,00</div>
+            <div class="kpi"><b>Aprovado</b> R$ 387.200,00</div>
+          </div>
+          <ul>
+            <li>Diferença em análise: R$ 25.300,00</li>
+            <li>Prazo de aprovação: até dia 28</li>
+          </ul>
+        `
+      },
+      aditivos: {
+        titulo: "Aditivos em Negociação",
+        html: `
+          <div class="eng-kpi">
+            <div class="kpi"><b>Qtde</b> 3</div>
+            <div class="kpi"><b>Total</b> R$ 188.000,00</div>
+          </div>
+          <ul>
+            <li>Entrada de energia – cabos e componentes (R$ 92.000) • <i>Em negociação</i></li>
+            <li>Barramentos blindados – diferenças de especificação (R$ 61.000) • <i>Aguardando retorno</i></li>
+            <li>Complementos de automação (R$ 35.000) • <i>Minuta enviada</i></li>
+          </ul>
+        `
+      },
+      custos_extras: {
+        titulo: "Custos Extras Registrados",
+        html: `
+          <ul>
+            <li>Roubos de cabos – Boletins registrados • impacto estimado R$ 28.000</li>
+            <li>Retrabalhos – ajustes em painéis • R$ 7.500</li>
+            <li>Adiantamentos logísticos • R$ 4.200</li>
+          </ul>
+        `
+      },
+      materiais_pendentes: {
+        titulo: "Materiais Críticos Pendentes",
+        html: `
+          <ul>
+            <li><b>Barramentos blindados</b> – sem previsão (responsável: Patrimar)</li>
+            <li><b>Cabos 240 mm²</b> – aguardando liberação de compra</li>
+            <li><b>Bombas de recalque</b> – pendente definição de comando</li>
+          </ul>
+        `
+      },
+      entregas_previstas: {
+        titulo: "Entrega Prevista",
+        html: `
+          <ul>
+            <li>Disjuntores e DPS – chegada prevista: 18/09</li>
+            <li>Leitos e braçadeiras – chegada prevista: 20/09</li>
+            <li>Quadros auxiliares – chegada prevista: 24/09</li>
+          </ul>
+        `
+      },
+      avanco_fisico: {
+        titulo: "Avanço Físico (%)",
+        html: `
+          <div class="eng-kpi">
+            <div class="kpi"><b>Planejado</b> 68%</div>
+            <div class="kpi"><b>Real</b> 63%</div>
+          </div>
+          <ul>
+            <li>Desvio atual: -5 p.p. (principalmente materiais críticos)</li>
+          </ul>
+        `
+      },
+      atividades_criticas: {
+        titulo: "Atividades Críticas da Semana",
+        html: `
+          <ul>
+            <li>Fechamento de eletrocalhas nos pavimentos 3 a 5</li>
+            <li>Passagem de cabos alimentadores (bloco A)</li>
+            <li>Ensaios de continuidade e isolação nas prumadas</li>
+          </ul>
+        `
+      },
+      prazo_est_x_plan: {
+        titulo: "Prazo Estimado x Planejado",
+        html: `
+          <div class="eng-kpi">
+            <div class="kpi"><b>Planejado</b> Dez/25</div>
+            <div class="kpi"><b>Estimado</b> Jan/26</div>
+          </div>
+          <ul>
+            <li>Impactos: materiais críticos e definição de aditivos</li>
+          </ul>
+        `
+      },
+      frentes_paradas: {
+        titulo: "Frentes Paradas",
+        html: `
+          <ul>
+            <li>Casa de bombas – aguardando definição de comando</li>
+            <li>Entrada de energia – pendente compra/fornecimento</li>
+          </ul>
+        `
+      },
+      efetivo_atual: {
+        titulo: "Efetivo Atual",
+        html: `
+          <div class="eng-kpi">
+            <div class="kpi"><b>Total em obra</b> 28</div>
+            <div class="kpi"><b>Terceiros</b> 7</div>
+          </div>
+          <ul>
+            <li>Equipe elétrica: 18 • Montagem: 6 • Apoio/almox: 4</li>
+          </ul>
+        `
+      }
+    };
+
+    function renderEngInfo() {
+      const sel = document.getElementById('engInfoSelect');
+      const box = document.getElementById('engInfoContent');
+      const key = sel.value;
+      const item = engInfoMap[key];
+      if (!item) { box.innerHTML = ""; return; }
+      box.innerHTML = `<h3>${item.titulo}</h3>${item.html}`;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const sel = document.getElementById('engInfoSelect');
+      if (sel) {
+        renderEngInfo();
+        sel.addEventListener('change', renderEngInfo);
+      }
+    });
+
     // Utilitários de cor a partir de CSS variables
     function varGet(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
     function hexA(hex, alpha){
@@ -213,4 +398,3 @@
   </script>
 </body>
 </html>
-
