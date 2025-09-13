@@ -23,9 +23,9 @@
 
     /* Cabeçalho sem tarja: fundo transparente e linha sutil inferior */
     header{
-      background:transparent; /* removida a tarja azul */
+      background:transparent;
       color:var(--texto);
-      padding:18px 20px; /* respiro vertical */
+      padding:18px 20px;
       padding-right:300px; /* espaço seguro para a logo grande à direita */
       text-align:center;
       position:relative;
@@ -57,7 +57,7 @@
     .container{ padding:10px; }
     .card{ background:var(--card); border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,.08); padding:16px; margin:12px auto; width:95%; }
 
-    /* Botões resumo (área de toque maior) */
+    /* Botões resumo */
     .btn-group{ display:flex; flex-direction:column; align-items:center; gap:10px; }
     .btn{ width:260px; background:var(--btn); color:var(--texto); padding:16px 22px; border:none; border-radius:12px; font-size:16px; cursor:pointer; text-transform:uppercase; }
     .btn:hover{ background:var(--btnh); }
@@ -102,23 +102,21 @@
     .eng-kpi .kpi b{ display:block; font-size:16px; margin-bottom:2px; }
     @media (max-width:520px){ .eng-kpi{ grid-template-columns:1fr; } }
 
-    /* Rodapé discreto */
+    /* Rodapé */
     footer{ text-align:center; font-size:12px; color:#6b7280; padding:18px 10px 28px; }
     footer span{ opacity:.8; }
   </style>
 </head>
 <body>
   <header>
-    <!-- Marca textual removida; a identidade fica apenas na logo -->
     <h1>Atlântico Golf - Resumo Financeiro - Setembro/25</h1>
-    <!-- Logo clicável no canto direito do cabeçalho -->
     <a class="header-logo" href="https://systemengenharia.com.br/" target="_blank" rel="noopener" aria-label="Abrir site da System Engenharia">
       <img src="https://storage.googleapis.com/ecdt-logo-saida/c05d9d1df7090ad36c83e13a3ff294fc322d09c6dbe030f5f13f67620416ab1d/SYSTEM-ENGENHARIA.webp" alt="Logo System Engenharia" loading="lazy" decoding="async">
     </a>
   </header>
 
   <div class="container">
-    <!-- 1) PREVISTO x EMITIDO (linha) - topo -->
+    <!-- 1) PREVISTO x EMITIDO (linha) -->
     <div class="card">
       <div class="chart-wrap">
         <canvas id="defasagem3m" aria-label="Gráfico de linhas Previsto x Emitido"></canvas>
@@ -155,6 +153,7 @@
         <select id="engInfoSelect" class="select-eng" aria-label="Selecionar informação de engenharia">
           <option value="medicoes">Medições do Mês</option>
           <option value="aditivos">Aditivos em Negociação</option>
+          <option value="adicionais_identificados">Adicionais identificados (não negociados)</option>
           <option value="custos_extras">Custos Extras Registrados</option>
           <option value="materiais_pendentes">Materiais Críticos Pendentes</option>
           <option value="entregas_previstas">Entrega Prevista</option>
@@ -207,8 +206,9 @@
   <script>
     // ================= Base =================
     const totalApresentado = 835119.52;
-    const totalAprovado = 324333.27; // NF Liberada (Aprovado)
+    const totalAprovado   = 324333.27; // NF Liberada (Aprovado)
 
+    // Mostrar/ocultar valores dos botões
     function mostrarValor(id){
       const vals = document.querySelectorAll('.valor');
       vals.forEach(el => el.style.display = (el.id === id && el.style.display !== 'block') ? 'block' : 'none');
@@ -217,15 +217,15 @@
     // ===== Gráfico 1: Linha PREVISTO x EMITIDO (mesma proporção dos 3 meses) =====
     const ratioSet = totalAprovado / totalApresentado; // mantém a proporção
     const previstoSerie = [700000, 780000, totalApresentado]; // JUL, AGO, SET (simulados nos 2 primeiros)
-    const emitidoSerie = previstoSerie.map(v => v * ratioSet);
+    const emitidoSerie  = previstoSerie.map(v => v * ratioSet);
 
     new Chart(document.getElementById('defasagem3m'), {
       type: 'line',
       data: {
         labels: ['JUL/25','AGO/25','SET/25'],
         datasets: [
-          { label:'Previsto', data: previstoSerie, borderColor: varGet('--azul'), backgroundColor: hexA(varGet('--azul'), .12), tension:.35, borderWidth:2, pointRadius:3, pointHoverRadius:5 },
-          { label:'Emitido', data: emitidoSerie, borderColor: varGet('--vermelho'), backgroundColor: hexA(varGet('--vermelho'), .12), tension:.35, borderWidth:2, pointRadius:3, pointHoverRadius:5 }
+          { label:'Previsto', data: previstoSerie, borderColor: varGet('--azul'),     backgroundColor: hexA(varGet('--azul'), .12),     tension:.35, borderWidth:2, pointRadius:3, pointHoverRadius:5 },
+          { label:'Emitido',  data: emitidoSerie,  borderColor: varGet('--vermelho'), backgroundColor: hexA(varGet('--vermelho'), .12), tension:.35, borderWidth:2, pointRadius:3, pointHoverRadius:5 }
         ]
       },
       options:{
@@ -249,167 +249,166 @@
         labels:['Jun/25','Jul/25','Ago/25','Set/25','Out/25','Nov/25','Dez/25','Jan/26','Fev/26','Mar/26','Abr/26','Mai/26'],
         datasets:[
           { label:'Prazo com Ajuste Financeiro (encerra Dez/25)', data:[10,20,35,50,65,80,100,0,0,0,0,0], backgroundColor: hexA(varGet('--azul'), .85) },
-          { label:'Prazo com Cortes Mantidos (encerra Mai/26)', data:[5,15,25,35,45,55,65,75,85,95,100,100], backgroundColor: hexA(varGet('--vermelho'), .85) }
+          { label:'Prazo com Cortes Mantidos (encerra Mai/26)',   data:[5,15,25,35,45,55,65,75,85,95,100,100], backgroundColor: hexA(varGet('--vermelho'), .85) }
         ]
       },
       options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' }, title:{ display:true, text:'CRONOGRAMA CRÍTICO', color:varGet('--texto'), font:{ size:18, weight:'bold' }, align:'center' } } }
     });
 
-    // ===== Dropdown de Engenharia =====
-    medicoes: {
-    titulo: "Medições do Mês",
-    html: `
-      <div class="eng-kpi">
-        <div class="kpi"><b>Apresentado</b> R$ 835.119,52</div>
-        <div class="kpi"><b>NF Liberada</b> R$ 324.333,27</div>
-      </div>
-      <ul>
-        <li>Contrato principal — Apresentado <b>341.782,98</b> · NF <b>248.042,67</b></li>
-        <li>Reajuste do contrato principal — Apresentado <b>96.222,96</b> · NF <b>14.902,13</b></li>
-        <li>Entrada de energia — Apresentado <b>0,00</b> · NF <b>58.465,24</b></li>
-        <li>Reajuste do contrato de entrada de energia — Apresentado <b>60.113,58</b> · NF <b>2.923,23</b></li>
-        <li>Aditivos c/ desconto especial (pag. integral) — Apresentado <b>337.000,00</b> · NF <b>0,00</b></li>
-      </ul>
-      <ul>
-        <li><b>Total</b>: Apresentado <b>R$ 835.119,52</b> · NF <b>R$ 324.333,27</b> · Diferença <b>R$ 510.786,25</b></li>
-      </ul>
-    `
-  },
+    // ================== Informações de Engenharia (dropdown) ==================
+    const engInfoMap = {
+      medicoes: {
+        titulo: "Medições do Mês",
+        html: `
+          <div class="eng-kpi">
+            <div class="kpi"><b>Apresentado</b> R$ 835.119,52</div>
+            <div class="kpi"><b>NF Liberada</b> R$ 324.333,27</div>
+          </div>
+          <ul>
+            <li>Contrato principal — Apresentado <b>341.782,98</b> · NF <b>248.042,67</b></li>
+            <li>Reajuste do contrato principal — Apresentado <b>96.222,96</b> · NF <b>14.902,13</b></li>
+            <li>Entrada de energia — Apresentado <b>0,00</b> · NF <b>58.465,24</b></li>
+            <li>Reajuste do contrato de entrada de energia — Apresentado <b>60.113,58</b> · NF <b>2.923,23</b></li>
+            <li>Aditivos c/ desconto especial (pag. integral) — Apresentado <b>337.000,00</b> · NF <b>0,00</b></li>
+          </ul>
+          <ul>
+            <li><b>Total</b>: Apresentado <b>R$ 835.119,52</b> · NF <b>R$ 324.333,27</b> · Diferença <b>R$ 510.786,25</b></li>
+          </ul>
+        `
+      },
 
-  aditivos: {
-    titulo: "Aditivos em Negociação",
-    html: `
-      <ul>
-        <li>1) Ralos do embasamento – parte 2 — <b>PACS-01_2025</b></li>
-        <li>2) Instalação de caixas elétricas e módulos elétricos — <b>PACS-02_2025</b></li>
-        <li>3) Iluminação do térreo externo — <b>PACS-03_2025</b></li>
-        <li>4) Rede externa pluvial — <b>PACS-04_2025</b></li>
-        <li>5) Redutoras de pressão bl3 — <b>PACS-05_2025</b></li>
-        <li>6) Iluminação área dos reservatórios — <b>PACS-06_2025</b></li>
-      </ul>
-      <div class="eng-kpi" style="margin-top:8px;">
-        <div class="kpi" style="grid-column:1 / -1;"><b>Total em negociação</b> R$ 337.000,00</div>
-      </div>
-    `
-  },
+      aditivos: {
+        titulo: "Aditivos em Negociação",
+        html: `
+          <ul>
+            <li>1) Ralos do embasamento – parte 2 — <b>PACS-01_2025</b></li>
+            <li>2) Instalação de caixas elétricas e módulos elétricos — <b>PACS-02_2025</b></li>
+            <li>3) Iluminação do térreo externo — <b>PACS-03_2025</b></li>
+            <li>4) Rede externa pluvial — <b>PACS-04_2025</b></li>
+            <li>5) Redutoras de pressão bl3 — <b>PACS-05_2025</b></li>
+            <li>6) Iluminação área dos reservatórios — <b>PACS-06_2025</b></li>
+          </ul>
+          <div class="eng-kpi" style="margin-top:8px;">
+            <div class="kpi" style="grid-column:1 / -1;"><b>Total em negociação</b> R$ 337.000,00</div>
+          </div>
+        `
+      },
 
-  custos_extras: {
-    titulo: "Custos Extras Registrados",
-    html: `
-      <ul>
-        <li>Roubos de cabos — boletins registrados — <b>R$ 95.000,00</b></li>
-        <li>Retrabalhos — ajustes em painéis — <b>R$ 20.000,00</b></li>
-        <li>Recolocação de tomadas e itens roubados — <b>R$ 35.000,00</b></li>
-      </ul>
-      <div class="eng-kpi" style="margin-top:8px;">
-        <div class="kpi" style="grid-column:1 / -1;"><b>Total</b> R$ 150.000,00</div>
-      </div>
-    `
-  },
+      adicionais_identificados: {
+        titulo: "Adicionais identificados (não negociados)",
+        html: `
+          <ul>
+            <li>7) Retrabalhos c/ instalações de gás — <b>PACS-07_2025</b> — <b>R$ 23.998,42</b></li>
+            <li>8) Ajustes barramentos blindados (≈ 50 peças) — <b>PACS-08_2025</b> — <b>R$ 67.412,29</b></li>
+            <li>9) Ajustes redes externas esgoto/elétrica/sist. especiais — <b>PACS-09_2025</b> — <b>R$ 41.888,74</b></li>
+            <li>10) Ajustes no trocador de calor SPA (bloco 2) — <b>PACS-10_2025</b> — <b>R$ 8.866,94</b></li>
+            <li>11) Reservatórios inferiores (boias etc.) — <b>PACS-11_2025</b> — <b>R$ 8.977,96</b></li>
+            <li>12) Drenos em 49 aptos (a detalhar) — <b>PACS-12_2025</b> — (sem valor)</li>
+            <li>10*) Restante cabos furtados/componentes — <i>não apresentado</i> (em levantamento)</li>
+            <li>11*) Redutoras de pressão bl2 — <i>não apresentado</i> (aguardando definição)</li>
+          </ul>
+        `
+      },
 
-  materiais_pendentes: {
-    titulo: "Materiais Críticos Pendentes",
-    html: `
-      <ul>
-        <li><b>Barramentos blindados</b> — sem previsão (Patrimar)</li>
-        <li><b>Cabos 240 mm²</b> — aguardando compra (cabo emprestado)</li>
-        <li><b>Painéis ELETROASA</b></li>
-        <li><b>PVC</b> pendente</li>
-        <li><b>PPR</b> — fechamento casa de bombas</li>
-      </ul>
-    `
-  },
+      custos_extras: {
+        titulo: "Custos Extras Registrados",
+        html: `
+          <ul>
+            <li>Roubos de cabos — boletins registrados — <b>R$ 95.000,00</b></li>
+            <li>Retrabalhos — ajustes em painéis — <b>R$ 20.000,00</b></li>
+            <li>Recolocação de tomadas e itens roubados — <b>R$ 35.000,00</b></li>
+          </ul>
+          <div class="eng-kpi" style="margin-top:8px;">
+            <div class="kpi" style="grid-column:1 / -1;"><b>Total</b> R$ 150.000,00</div>
+          </div>
+        `
+      },
 
-  entregas_previstas: {
-    titulo: "Entrega Prevista",
-    html: `
-      <ul>
-        <li>Itens de QDLs</li>
-        <li>PVC e PPR</li>
-        <li>Insumos em geral</li>
-      </ul>
-    `
-  },
+      materiais_pendentes: {
+        titulo: "Materiais Críticos Pendentes",
+        html: `
+          <ul>
+            <li><b>Barramentos blindados</b> — sem previsão (Patrimar)</li>
+            <li><b>Cabos 240 mm²</b> — aguardando compra da Patrimar (cabo emprestado)</li>
+            <li><b>Painéis ELETROASA</b></li>
+            <li><b>PVC</b> pendente</li>
+            <li><b>PPR</b> — fechamento casa de bombas</li>
+          </ul>
+        `
+      },
 
-  avanco_fisico: {
-    titulo: "Avanço Físico (%)",
-    html: `
-      <div class="eng-kpi">
-        <div class="kpi"><b>Planejado</b> 85%</div>
-        <div class="kpi"><b>Real</b> 70%</div>
-      </div>
-      <ul><li>Desvio atual: <b>-15 p.p.</b></li></ul>
-    `
-  },
+      entregas_previstas: {
+        titulo: "Entrega Prevista",
+        html: `
+          <ul>
+            <li>Itens de QDLs</li>
+            <li>PVC e PPR</li>
+            <li>Insumos em geral</li>
+          </ul>
+        `
+      },
 
-  atividades_criticas: {
-    titulo: "Atividades Críticas da Semana",
-    html: `
-      <ul>
-        <li>Entrega de apartamentos (metais e espelhos de tomadas)</li>
-        <li>Redes do subsolo (hidráulica e sanitária)</li>
-        <li>Infraestruturas de áreas comuns</li>
-        <li>Tês de fachada</li>
-        <li>Redutoras bloco 3</li>
-      </ul>
-    `
-  },
+      avanco_fisico: {
+        titulo: "Avanço Físico (%)",
+        html: `
+          <div class="eng-kpi">
+            <div class="kpi"><b>Planejado</b> 85%</div>
+            <div class="kpi"><b>Real</b> 70%</div>
+          </div>
+          <ul><li>Desvio atual: <b>-15 p.p.</b></li></ul>
+        `
+      },
 
-  prazo_est_x_plan: {
-    titulo: "Prazo Estimado x Planejado",
-    html: `
-      <div class="eng-kpi">
-        <div class="kpi"><b>Planejado</b> novembro</div>
-        <div class="kpi"><b>Estimado</b> maio/26</div>
-      </div>
-      <ul><li>Atraso aproximado: ~6 meses</li></ul>
-    `
-  },
+      atividades_criticas: {
+        titulo: "Atividades Críticas da Semana",
+        html: `
+          <ul>
+            <li>Entrega de apartamentos (metais e espelhos de tomadas)</li>
+            <li>Redes do subsolo (hidráulica e sanitária)</li>
+            <li>Infraestruturas de áreas comuns</li>
+            <li>Tês de fachada</li>
+            <li>Redutoras bloco 3</li>
+          </ul>
+        `
+      },
 
-  frentes_paradas: {
-    titulo: "Frentes Paradas",
-    html: `
-      <ul>
-        <li>Status: <b>a verificar em 15/09</b></li>
-      </ul>
-    `
-  },
+      prazo_est_x_plan: {
+        titulo: "Prazo Estimado x Planejado",
+        html: `
+          <div class="eng-kpi">
+            <div class="kpi"><b>Planejado</b> novembro</div>
+            <div class="kpi"><b>Estimado</b> maio/26</div>
+          </div>
+          <ul><li>Atraso aproximado: ~6 meses</li></ul>
+        `
+      },
 
-  // mantenho aqui um slot para Efetivo Atual (preencha quando tiver os números)
-  efetivo_atual: {
-    titulo: "Efetivo Atual",
-    html: `
-      <ul>
-        <li><i>Não informado</i></li>
-      </ul>
-    `
-  },
+      frentes_paradas: {
+        titulo: "Frentes Paradas",
+        html: `
+          <ul>
+            <li>Status: <b>a verificar em 15/09</b></li>
+          </ul>
+        `
+      },
 
-  // bloco extra com os "Adicionais identificados" (não negociados) da imagem 3
-  adicionais_identificados: {
-    titulo: "Adicionais identificados (não negociados)",
-    html: `
-      <ul>
-        <li>7) Retrabalhos c/ instalações de gás — <b>PACS-07_2025</b> — <b>R$ 23.998,42</b></li>
-        <li>8) Ajustes barramentos blindados (≈ 50 peças) — <b>PACS-08_2025</b> — <b>R$ 67.412,29</b></li>
-        <li>9) Ajustes redes externas esgoto/elétrica/sist. especiais — <b>PACS-09_2025</b> — <b>R$ 41.888,74</b></li>
-        <li>10) Ajustes no trocador de calor SPA (bloco 2) — <b>PACS-10_2025</b> — <b>R$ 8.866,94</b></li>
-        <li>11) Reservatórios inferiores (boias etc.) — <b>PACS-11_2025</b> — <b>R$ 8.977,96</b></li>
-        <li>12) Drenos em 49 aptos (a detalhar) — <b>PACS-12_2025</b> — (sem valor)</li>
-        <li>10*) Restante cabos furtados/componentes — <i>não apresentado</i></li>
-        <li>11*) Redutoras de pressão bl2 — <i>não apresentado</i></li>
-      </ul>
-    `
-  }
-};
+      efetivo_atual: {
+        titulo: "Efetivo Atual",
+        html: `
+          <ul>
+            <li><i>Não informado</i></li>
+          </ul>
+        `
+      }
+    };
 
+    // Render inicial e reação à mudança
     function renderEngInfo() {
       const sel = document.getElementById('engInfoSelect');
       const box = document.getElementById('engInfoContent');
       const key = sel.value;
       const item = engInfoMap[key];
-      if (!item) { box.innerHTML = ""; return; }
-      box.innerHTML = `<h3>${item.titulo}</h3>${item.html}`;
+      box.innerHTML = item ? `<h3>${item.titulo}</h3>${item.html}` : "";
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -420,7 +419,7 @@
       }
     });
 
-    // Utilitários de cor a partir de CSS variables
+    // Utilitários de cor
     function varGet(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
     function hexA(hex, alpha){
       const m = hex.replace('#','');
