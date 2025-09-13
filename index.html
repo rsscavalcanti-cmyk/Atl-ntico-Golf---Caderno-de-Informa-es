@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Atlântico Golf - Resumo Financeiro - Setembro/25</title>
+  <meta name="description" content="Dashboard financeiro estático do projeto Atlântico Golf — pronto para publicação e incorporação no Canva.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23005b96'/%3E%3Ctext x='50' y='58' text-anchor='middle' font-size='54' fill='%23fff' font-family='Arial,Helvetica,sans-serif'%3ESE%3C/text%3E%3C/svg%3E">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --azul:#005b96;      /* azul corporativo - APROVADO / PREVISTO */
+      --vermelho:#e74c3c;  /* vermelho - APRESENTADO / EMITIDO */
+      --texto:#2c3e50;
+      --bg:#f4f4f4;
+      --card:#ffffff;
+      --btn:#d3d3d3;
+      --btnh:#bcbcbc;
+    }
+    *{ box-sizing:border-box; }
+    body{ margin:0; font-family:Arial, Helvetica, sans-serif; background:var(--bg); color:var(--texto); }
+    header{ background:#2c3e50; color:#fff; padding:16px 20px; text-align:center; }
+    header .brand{ font-weight:700; font-size:18px; letter-spacing:.5px; margin-bottom:6px; text-transform:uppercase; }
+    header h1{ margin:0; font-size:20px; letter-spacing:.5px; text-transform:uppercase; }
+
+    .container{ padding:10px; }
+    .card{ background:var(--card); border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,.08); padding:16px; margin:12px auto; width:95%; }
+
+    /* Botões resumo */
+    .btn-group{ display:flex; flex-direction:column; align-items:center; gap:10px; }
+    .btn{ width:260px; background:var(--btn); color:var(--texto); padding:14px 22px; border:none; border-radius:10px; font-size:16px; cursor:pointer; text-transform:uppercase; }
+    .btn:hover{ background:var(--btnh); }
+    .valor{ display:none; margin-top:8px; font-size:18px; font-weight:bold; text-transform:uppercase; text-align:center; }
+    @media (min-width:600px){ .btn-group{ flex-direction:row; flex-wrap:wrap; justify-content:center; } .btn{ max-width:260px; flex:1; } }
+
+    /* Gráficos responsivos */
+    .chart-wrap{ position:relative; width:100%; height:260px; }
+    @media (min-width:600px){ .chart-wrap{ height:300px; } }
+
+    /* Alert/Pendências */
+    .alert{ background:#fff7f7; border:1px solid #ffd7d7; border-radius:12px; padding:12px; }
+    .alert strong{ text-transform:uppercase; }
+    .alert ul{ margin:8px 0 0 18px; }
+    .alert li{ margin:6px 0; }
+
+    /* Discreto rodapé para uso externo/Canva */
+    footer{ text-align:center; font-size:12px; color:#6b7280; padding:18px 10px 28px; }
+    footer span{ opacity:.8; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand" aria-label="Marca">System Engenharia</div>
+    <h1>Atlântico Golf - Resumo Financeiro - Setembro/25</h1>
+  </header>
+
+  <div class="container">
+    <!-- 1) PREVISTO x EMITIDO (linha) - topo -->
+    <div class="card">
+      <div class="chart-wrap">
+        <canvas id="defasagem3m" aria-label="Gráfico de linhas Previsto x Emitido"></canvas>
+      </div>
+    </div>
+
+    <!-- 2) Botões resumo -->
+    <div class="card">
+      <div class="btn-group" role="group" aria-label="Resumo principal">
+        <div>
+          <button class="btn" onclick="mostrarValor('vApresentado')">Total Apresentado</button>
+          <div id="vApresentado" class="valor">R$ 835.119,52</div>
+        </div>
+        <div>
+          <button class="btn" onclick="mostrarValor('vAprovado')">Total Aprovado (NF Liberada)</button>
+          <div id="vAprovado" class="valor">R$ 324.333,27</div>
+        </div>
+        <div>
+          <button class="btn" onclick="mostrarValor('vAditivos')">Aditivos Não Pagos</button>
+          <div id="vAditivos" class="valor">R$ 337.000,00</div>
+        </div>
+        <div>
+          <button class="btn" onclick="mostrarValor('vDiferenca')">Diferença Total</button>
+          <div id="vDiferenca" class="valor">R$ 510.786,25</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3) Pizza APRESENTADO x APROVADO -->
+    <div class="card">
+      <div class="chart-wrap">
+        <canvas id="resumoFinanceiro" aria-label="Gráfico de pizza Apresentado x Aprovado"></canvas>
+      </div>
+    </div>
+
+    <!-- 4) Pendências Patrimar (logo após a pizza) -->
+    <div class="card">
+      <div class="alert">
+        <strong>Pendências – Patrimar</strong>
+        <ul>
+          <li>Compra dos cabos e componentes para a <strong>entrada de energia</strong> – indefinição do cliente.</li>
+          <li><strong>Barramentos blindados</strong> – aguardando entrega; sem previsão (responsabilidade Patrimar).</li>
+          <li><strong>Novos aditivos</strong> identificados e ainda não apresentados neste resumo.</li>
+          <li><strong>Roubos de cabos</strong> – ocorrências registradas; impacto financeiro e possível extensão de prazo.</li>
+          <li><strong>Comando das bombas de recalque</strong> – indefinições sobre funcionamento; assunto já informado à Patrimar.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 5) Cronograma crítico (barras) -->
+    <div class="card">
+      <div class="chart-wrap">
+        <canvas id="cronograma" aria-label="Cronograma crítico"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <span>Dashboard estático pronto para publicar e incorporar no Canva.</span>
+  </footer>
+
+  <script>
+    // Totais base (SET/25)
+    const totalApresentado = 835119.52;
+    const totalAprovado = 324333.27; // NF Liberada (Aprovado)
+
+    // Mostrar/ocultar valores dos botões
+    function mostrarValor(id){
+      const vals = document.querySelectorAll('.valor');
+      vals.forEach(el => el.style.display = (el.id === id && el.style.display !== 'block') ? 'block' : 'none');
+    }
+
+    // ===== Gráfico 1: Linha PREVISTO x EMITIDO (mesma proporção dos 3 meses) =====
+    const ratioSet = totalAprovado / totalApresentado; // mantém a proporção
+    const previstoSerie = [700000, 780000, totalApresentado]; // JUL, AGO, SET (simulados nos 2 primeiros)
+    const emitidoSerie = previstoSerie.map(v => v * ratioSet);
+
+    new Chart(document.getElementById('defasagem3m'), {
+      type: 'line',
+      data: {
+        labels: ['JUL/25','AGO/25','SET/25'],
+        datasets: [
+          { label:'Previsto', data: previstoSerie, borderColor: varGet('--azul'), backgroundColor: hexA(varGet('--azul'), .12), tension:.35, borderWidth:2, pointRadius:3, pointHoverRadius:5 },
+          { label:'Emitido', data: emitidoSerie, borderColor: varGet('--vermelho'), backgroundColor: hexA(varGet('--vermelho'), .12), tension:.35, borderWidth:2, pointRadius:3, pointHoverRadius:5 }
+        ]
+      },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        scales:{ y:{ beginAtZero:true, ticks:{ callback:v=>'R$ '+Number(v).toLocaleString('pt-BR') } } },
+        plugins:{ legend:{ position:'bottom' }, title:{ display:true, text:'PREVISTO × EMITIDO — JUL→SET/25', color:varGet('--texto'), font:{ size:18, weight:'bold' }, align:'center' }, tooltip:{ callbacks:{ label:ctx=> ctx.dataset.label+': R$ '+Number(ctx.raw).toLocaleString('pt-BR',{minimumFractionDigits:2}) } } }
+      }
+    });
+
+    // ===== Gráfico 2: Pizza APRESENTADO x APROVADO (SET/25) =====
+    new Chart(document.getElementById('resumoFinanceiro'), {
+      type:'pie',
+      data:{ labels:['APRESENTADO','APROVADO'], datasets:[{ data:[totalApresentado, totalAprovado], backgroundColor:[varGet('--vermelho'), varGet('--azul')] }] },
+      options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' }, title:{ display:true, text:'APRESENTADO × APROVADO — SET/25', color:varGet('--texto'), font:{ size:18, weight:'bold' }, align:'center' } } }
+    });
+
+    // ===== Gráfico 3: Barras Cronograma =====
+    new Chart(document.getElementById('cronograma'), {
+      type:'bar',
+      data:{
+        labels:['Jun/25','Jul/25','Ago/25','Set/25','Out/25','Nov/25','Dez/25','Jan/26','Fev/26','Mar/26','Abr/26','Mai/26'],
+        datasets:[
+          { label:'Prazo com Ajuste Financeiro (encerra Dez/25)', data:[10,20,35,50,65,80,100,0,0,0,0,0], backgroundColor: hexA(varGet('--azul'), .85) },
+          { label:'Prazo com Cortes Mantidos (encerra Mai/26)', data:[5,15,25,35,45,55,65,75,85,95,100,100], backgroundColor: hexA(varGet('--vermelho'), .85) }
+        ]
+      },
+      options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' }, title:{ display:true, text:'CRONOGRAMA CRÍTICO', color:varGet('--texto'), font:{ size:18, weight:'bold' }, align:'center' } } }
+    });
+
+    // Utilitários de cor a partir de CSS variables
+    function varGet(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    function hexA(hex, alpha){
+      const m = hex.replace('#','');
+      const r = parseInt(m.substring(0,2),16), g = parseInt(m.substring(2,4),16), b = parseInt(m.substring(4,6),16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+  </script>
+</body>
+</html>
