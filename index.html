@@ -16,14 +16,28 @@
       --card:#ffffff;
       --btn:#d3d3d3;
       --btnh:#bcbcbc;
+      --borda:#e5e7eb;     /* cinza claro para divisórias */
     }
     *{ box-sizing:border-box; }
     body{ margin:0; font-family:Arial, Helvetica, sans-serif; background:var(--bg); color:var(--texto); }
 
-    /* Cabeçalho com espaço extra à direita para a logo grande */
-    header{ background:#2c3e50; color:#fff; padding:16px 20px; padding-right:260px; text-align:center; position:relative; }
-    header .brand{ font-weight:700; font-size:18px; letter-spacing:.5px; margin-bottom:6px; text-transform:uppercase; }
-    header h1{ margin:0; font-size:20px; letter-spacing:.5px; text-transform:uppercase; }
+    /* Cabeçalho sem tarja (fundo transparente), com linha sutil inferior */
+    header{
+      background:transparent; /* removida a tarja azul */
+      color:var(--texto);
+      padding:18px 20px; /* um pouco mais de respiro */
+      padding-right:260px; /* espaço para a logo grande à direita */
+      text-align:center;
+      position:relative;
+      border-bottom:1px solid var(--borda);
+    }
+    header h1{
+      margin:0;
+      font-size:22px;
+      letter-spacing:.3px;
+      text-transform:uppercase;
+      line-height:1.25;
+    }
 
     /* Logo grande e alinhada ao topo direito */
     .header-logo{ position:absolute; right:20px; top:-30px; height:150px; opacity:.95; display:inline-block; }
@@ -32,9 +46,10 @@
 
     @media (min-width:600px){
       .header-logo{ height:180px; top:-40px; }
+      header{ padding-right:300px; }
+      header h1{ font-size:24px; }
     }
     @media (max-width:360px){
-      header .brand{ font-size:16px; }
       header h1{ font-size:18px; }
     }
 
@@ -65,7 +80,7 @@
 </head>
 <body>
   <header>
-    <div class="brand" aria-label="Marca">System Engenharia</div>
+    <!-- Removido o nome "System Engenharia"; a identidade visual fica apenas no logo -->
     <h1>Atlântico Golf - Resumo Financeiro - Setembro/25</h1>
     <!-- Logo clicável no canto direito do cabeçalho -->
     <a class="header-logo" href="https://systemengenharia.com.br/" target="_blank" rel="noopener" aria-label="Abrir site da System Engenharia">
