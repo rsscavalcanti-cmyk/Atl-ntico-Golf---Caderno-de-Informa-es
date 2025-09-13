@@ -7,6 +7,7 @@
   <meta name="description" content="Dashboard financeiro estático do projeto Atlântico Golf — pronto para publicação e incorporação no Canva.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23005b96'/%3E%3Ctext x='50' y='58' text-anchor='middle' font-size='54' fill='%23fff' font-family='Arial,Helvetica,sans-serif'%3ESE%3C/text%3E%3C/svg%3E">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
     :root{
       --azul:#005b96;      /* azul corporativo - APROVADO / PREVISTO */
@@ -20,6 +21,44 @@
     }
     *{ box-sizing:border-box; }
     body{ margin:0; font-family:Arial, Helvetica, sans-serif; background:var(--bg); color:var(--texto); }
+
+    /* ====== BLOQUEIO COM SENHA (overlay) ====== */
+    .gate{
+      position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+      background:linear-gradient(180deg,#0b0f14 0%,#0b0f14d0 60%,#0b0f1499 100%);
+      backdrop-filter: blur(3px); z-index:9999;
+      color:#e7edf5; font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    }
+    .gate .card{
+      width:min(96vw,420px); padding:24px 20px; border-radius:16px; background:#121821;
+      box-shadow:0 8px 30px rgba(0,0,0,.35); border:1px solid #1c2633;
+    }
+    .brand{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+    .dot{width:12px;height:12px;border-radius:50%;background:#1f6feb}
+    .brand h1{font-size:16px;margin:0;color:#cfe0ff;font-weight:600;letter-spacing:.2px}
+    .muted{color:#9fb0c4;font-size:12.5px;margin:2px 0 16px}
+    label{display:block;font-size:12.5px;color:#c7d2e2;margin-bottom:6px}
+    input[type=password]{
+      width:100%;padding:12px 12px;border-radius:10px;background:#0e141c;color:#e7edf5;
+      border:1px solid #223045;outline:none
+    }
+    input[type=password]::placeholder{color:#6f7c90}
+    .row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:12px}
+    .hint{font-size:12px;color:#7e8a9a}
+    .gate button{
+      appearance:none;border:0;border-radius:10px;padding:10px 14px;font-weight:600;
+      background:#1f6feb;color:white;cursor:pointer
+    }
+    .err{margin-top:10px;color:#ff7a90;font-size:12.5px;display:none}
+
+    /* Conteúdo protegido fica invisível até liberar */
+    #protected{opacity:0;pointer-events:none;transition:opacity .25s ease}
+    #logoutBtn{
+      position:fixed;right:10px;bottom:10px;font-size:12px;background:#223045;color:#cfe0ff;
+      border:0;border-radius:10px;padding:8px 10px;cursor:pointer;display:none
+    }
+
+    /* ====== Estilos originais ====== */
 
     /* Cabeçalho sem tarja: fundo transparente e linha sutil inferior */
     header{
@@ -38,7 +77,6 @@
       text-transform:uppercase;
       line-height:1.25;
     }
-
     /* Logo grande e alinhada ao topo direito */
     .header-logo{ position:absolute; right:20px; top:-40px; height:180px; opacity:.98; display:inline-block; }
     .header-logo:hover{ opacity:1; }
@@ -108,141 +146,193 @@
   </style>
 </head>
 <body>
-  <header>
-    <h1>Atlântico Golf - Resumo Financeiro - Setembro/25</h1>
-    <a class="header-logo" href="https://systemengenharia.com.br/" target="_blank" rel="noopener" aria-label="Abrir site da System Engenharia">
-      <img src="https://storage.googleapis.com/ecdt-logo-saida/c05d9d1df7090ad36c83e13a3ff294fc322d09c6dbe030f5f13f67620416ab1d/SYSTEM-ENGENHARIA.webp" alt="Logo System Engenharia" loading="lazy" decoding="async">
-    </a>
-  </header>
 
-  <div class="container">
-    <!-- 1) PREVISTO x EMITIDO (linha) -->
+  <!-- ===== Overlay de senha ===== -->
+  <div class="gate" id="gate">
     <div class="card">
-      <div class="chart-wrap">
-        <canvas id="defasagem3m" aria-label="Gráfico de linhas Previsto x Emitido"></canvas>
+      <div class="brand">
+        <div class="dot"></div><h1>System Engenharia · Acesso restrito</h1>
       </div>
-    </div>
-
-    <!-- 2) Botões resumo -->
-    <div class="card">
-      <div class="btn-group" role="group" aria-label="Resumo principal">
-        <div>
-          <button class="btn" onclick="mostrarValor('vApresentado')">Medições do Mês</button>
-          <div id="vApresentado" class="valor">R$ 835.119,52</div>
-        </div>
-        <div>
-          <button class="btn" onclick="mostrarValor('vAprovado')">Total Aprovado (NF)</button>
-          <div id="vAprovado" class="valor">R$ 324.333,27</div>
-        </div>
-        <div>
-          <button class="btn" onclick="mostrarValor('vAditivos')">Aditivos Não Pagos</button>
-          <div id="vAditivos" class="valor">R$ 337.000,00</div>
-        </div>
-        <div>
-          <button class="btn" onclick="mostrarValor('vDiferenca')">Diferença Total</button>
-          <div id="vDiferenca" class="valor">R$ 510.786,25</div>
-        </div>
+      <p class="muted">Conteúdo sensível. Autorização requerida.</p>
+      <label for="pwd">Senha</label>
+      <input id="pwd" type="password" placeholder="••••••••••" autocomplete="current-password" />
+      <div class="row">
+        <span class="hint">Sessão lembrada até fechar o navegador.</span>
+        <button id="enterBtn">Entrar</button>
       </div>
-    </div>
-
-    <!-- 3) Campo suspenso – Informações de Engenharia -->
-    <div class="card">
-      <div style="display:flex; flex-direction:column; gap:12px;">
-        <label for="engInfoSelect" style="font-weight:600;">Informações de Engenharia</label>
-
-        <select id="engInfoSelect" class="select-eng" aria-label="Selecionar informação de engenharia">
-          <option value="medicoes">Medições do Mês</option>
-          <option value="aditivos">Aditivos em Negociação</option>
-          <option value="adicionais_identificados">Adicionais identificados (não negociados)</option>
-          <option value="custos_extras">Custos Extras Registrados</option>
-          <option value="materiais_pendentes">Materiais Críticos Pendentes</option>
-          <option value="entregas_previstas">Entrega Prevista</option>
-          <optgroup label="Prazo / Produção">
-            <option value="avanco_fisico">Avanço Físico (%)</option>
-            <option value="atividades_criticas">Atividades Críticas da Semana</option>
-            <option value="prazo_est_x_plan">Prazo Estimado x Planejado</option>
-            <option value="frentes_paradas">Frentes Paradas</option>
-          </optgroup>
-          <option value="efetivo_atual">Efetivo Atual</option>
-        </select>
-
-        <div id="engInfoContent" class="eng-content"><!-- preenchido via JS --></div>
-      </div>
-    </div>
-
-    <!-- 4) Pizza APRESENTADO x APROVADO -->
-    <div class="card">
-      <div class="chart-wrap">
-        <canvas id="resumoFinanceiro" aria-label="Gráfico de pizza Apresentado x Aprovado"></canvas>
-      </div>
-    </div>
-
-    <!-- 5) Pendências Patrimar -->
-    <div class="card">
-      <div class="alert">
-        <strong>Pendências – Patrimar</strong>
-        <ul>
-          <li>Compra dos cabos e componentes para a <strong>entrada de energia</strong> – indefinição do cliente.</li>
-          <li><strong>Barramentos blindados</strong> – aguardando entrega; sem previsão (responsabilidade Patrimar).</li>
-          <li><strong>Novos aditivos</strong> identificados e ainda não apresentados neste resumo.</li>
-          <li><strong>Roubos de cabos</strong> – ocorrências registradas; impacto financeiro e possível extensão de prazo.</li>
-          <li><strong>Comando das bombas de recalque</strong> – indefinições sobre funcionamento; assunto já informado à Patrimar.</li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- 6) Cronograma crítico (barras) -->
-    <div class="card">
-      <div class="chart-wrap">
-        <canvas id="cronograma" aria-label="Cronograma crítico"></canvas>
-      </div>
+      <div class="err" id="err">Senha incorreta.</div>
     </div>
   </div>
 
-  <footer>
-    <span>Dashboard estático pronto para publicar e incorporar no Canva.</span>
-  </footer>
+  <!-- ===== CONTEÚDO PROTEGIDO ===== -->
+  <div id="protected">
+    <header>
+      <h1>Atlântico Golf - Resumo Financeiro - Setembro/25</h1>
+      <a class="header-logo" href="https://systemengenharia.com.br/" target="_blank" rel="noopener" aria-label="Abrir site da System Engenharia">
+        <img src="https://storage.googleapis.com/ecdt-logo-saida/c05d9d1df7090ad36c83e13a3ff294fc322d09c6dbe030f5f13f67620416ab1d/SYSTEM-ENGENHARIA.webp" alt="Logo System Engenharia" loading="lazy" decoding="async">
+      </a>
+    </header>
+
+    <div class="container">
+      <div class="card">
+        <div class="chart-wrap">
+          <canvas id="defasagem3m" aria-label="Gráfico de linhas Previsto x Emitido"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="btn-group" role="group" aria-label="Resumo principal">
+          <div>
+            <button class="btn" onclick="mostrarValor('vApresentado')">Medições do Mês</button>
+            <div id="vApresentado" class="valor">R$ 835.119,52</div>
+          </div>
+          <div>
+            <button class="btn" onclick="mostrarValor('vAprovado')">Total Aprovado (NF)</button>
+            <div id="vAprovado" class="valor">R$ 324.333,27</div>
+          </div>
+          <div>
+            <button class="btn" onclick="mostrarValor('vAditivos')">Aditivos Não Pagos</button>
+            <div id="vAditivos" class="valor">R$ 337.000,00</div>
+          </div>
+          <div>
+            <button class="btn" onclick="mostrarValor('vDiferenca')">Diferença Total</button>
+            <div id="vDiferenca" class="valor">R$ 510.786,25</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <label for="engInfoSelect" style="font-weight:600;">Informações de Engenharia</label>
+
+          <select id="engInfoSelect" class="select-eng" aria-label="Selecionar informação de engenharia">
+            <option value="medicoes">Medições do Mês</option>
+            <option value="aditivos">Aditivos em Negociação</option>
+            <option value="adicionais_identificados">Adicionais identificados (não negociados)</option>
+            <option value="custos_extras">Custos Extras Registrados</option>
+            <option value="materiais_pendentes">Materiais Críticos Pendentes</option>
+            <option value="entregas_previstas">Entrega Prevista</option>
+            <optgroup label="Prazo / Produção">
+              <option value="avanco_fisico">Avanço Físico (%)</option>
+              <option value="atividades_criticas">Atividades Críticas da Semana</option>
+              <option value="prazo_est_x_plan">Prazo Estimado x Planejado</option>
+              <option value="frentes_paradas">Frentes Paradas</option>
+            </optgroup>
+            <option value="efetivo_atual">Efetivo Atual</option>
+          </select>
+
+          <div id="engInfoContent" class="eng-content"><!-- preenchido via JS --></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chart-wrap">
+          <canvas id="resumoFinanceiro" aria-label="Gráfico de pizza Apresentado x Aprovado"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="alert">
+          <strong>Pendências – Patrimar</strong>
+          <ul>
+            <li>Compra dos cabos e componentes para a <strong>entrada de energia</strong> – indefinição do cliente.</li>
+            <li><strong>Barramentos blindados</strong> – aguardando entrega; sem previsão (responsabilidade Patrimar).</li>
+            <li><strong>Novos aditivos</strong> identificados e ainda não apresentados neste resumo.</li>
+            <li><strong>Roubos de cabos</strong> – ocorrências registradas; impacto financeiro e possível extensão de prazo.</li>
+            <li><strong>Comando das bombas de recalque</strong> – indefinições sobre funcionamento; assunto já informado à Patrimar.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="chart-wrap">
+          <canvas id="cronograma" aria-label="Cronograma crítico"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <span>Dashboard estático pronto para publicar e incorporar no Canva.</span>
+    </footer>
+  </div>
+
+  <button id="logoutBtn" title="Encerrar sessão">Sair</button>
 
   <script>
-    // ================= Base =================
+    /* ========= BLOQUEIO COM SENHA =========
+       Senha: "System204060"
+       Hash SHA-256 (HEX): */
+    const HASHED_PASSWORD = "d47273bcaee92cd31a397027275ca2635ad93be7edb7d399c8d6429b2bdc7e82";
+
+    const gate = document.getElementById('gate');
+    const protectedEl = document.getElementById('protected');
+    const err = document.getElementById('err');
+    const pwdInput = document.getElementById('pwd');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    if (sessionStorage.getItem('auth-ok') === '1') unlock();
+    document.getElementById('enterBtn').addEventListener('click', tryAuth);
+    pwdInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') tryAuth(); });
+    logoutBtn.addEventListener('click', ()=>{ sessionStorage.removeItem('auth-ok'); location.reload(); });
+
+    async function tryAuth(){
+      err.style.display = 'none';
+      const ok = await checkPassword(pwdInput.value);
+      if(ok){ sessionStorage.setItem('auth-ok','1'); unlock(); }
+      else { err.style.display='block'; pwdInput.select(); }
+    }
+    function unlock(){
+      gate.style.display='none';
+      protectedEl.style.opacity=1; protectedEl.style.pointerEvents='auto';
+      logoutBtn.style.display='block';
+    }
+    async function checkPassword(plain){
+      if(!plain) return false;
+      const enc = new TextEncoder();
+      const digest = await crypto.subtle.digest('SHA-256', enc.encode(plain));
+      const hex = [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
+      if(hex.length !== HASHED_PASSWORD.length) return false;
+      let same = 0; for (let i=0;i<hex.length;i++) same |= hex.charCodeAt(i) ^ HASHED_PASSWORD.charCodeAt(i);
+      return same === 0;
+    }
+    // Pequenas barreiras para leigos (não impede dev experiente)
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && ['u','s','p','i'].includes(e.key.toLowerCase())) e.preventDefault();
+      if (e.key === 'F12') e.preventDefault();
+    });
+
+    /* ========= SEU JS ORIGINAL ========= */
     const totalApresentado = 835119.52;
     const totalAprovado   = 324333.27; // NF Liberada (Aprovado)
 
-    // Mostrar/ocultar valores dos botões
     function mostrarValor(id){
       const vals = document.querySelectorAll('.valor');
       vals.forEach(el => el.style.display = (el.id === id && el.style.display !== 'block') ? 'block' : 'none');
     }
 
-    // ===== Gráfico 1: Linha PREVISTO x EMITIDO (mesma proporção dos 3 meses) =====
     const ratioSet = totalAprovado / totalApresentado; // mantém a proporção
-    const previstoSerie = [700000, 780000, totalApresentado]; // JUL, AGO, SET (simulados nos 2 primeiros)
+    const previstoSerie = [700000, 780000, totalApresentado]; // JUL, AGO, SET
     const emitidoSerie  = previstoSerie.map(v => v * ratioSet);
 
     new Chart(document.getElementById('defasagem3m'), {
       type: 'line',
-      data: {
-        labels: ['JUL/25','AGO/25','SET/25'],
-        datasets: [
-          { label:'Previsto', data: previstoSerie, borderColor: varGet('--azul'),     backgroundColor: hexA(varGet('--azul'), .12),     tension:.35, borderWidth:2, pointRadius:3, pointHoverRadius:5 },
-          { label:'Emitido',  data: emitidoSerie,  borderColor: varGet('--vermelho'), backgroundColor: hexA(varGet('--vermelho'), .12), tension:.35, borderWidth:2, pointRadius:3, pointHoverRadius:5 }
-        ]
-      },
-      options:{
-        responsive:true, maintainAspectRatio:false,
+      data: { labels: ['JUL/25','AGO/25','SET/25'], datasets: [
+        { label:'Previsto', data: previstoSerie, borderColor: varGet('--azul'), backgroundColor: hexA(varGet('--azul'), .12), tension:.35, borderWidth:2, pointRadius:3, pointHoverRadius:5 },
+        { label:'Emitido',  data: emitidoSerie,  borderColor: varGet('--vermelho'), backgroundColor: hexA(varGet('--vermelho'), .12), tension:.35, borderWidth:2, pointRadius:3, pointHoverRadius:5 }
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false,
         scales:{ y:{ beginAtZero:true, ticks:{ callback:v=>'R$ '+Number(v).toLocaleString('pt-BR') } } },
         plugins:{ legend:{ position:'bottom' }, title:{ display:true, text:'PREVISTO × EMITIDO — JUL→SET/25', color:varGet('--texto'), font:{ size:18, weight:'bold' }, align:'center' }, tooltip:{ callbacks:{ label:ctx=> ctx.dataset.label+': R$ '+Number(ctx.raw).toLocaleString('pt-BR',{minimumFractionDigits:2}) } } }
       }
     });
 
-    // ===== Gráfico 2: Pizza APRESENTADO x APROVADO (SET/25) =====
     new Chart(document.getElementById('resumoFinanceiro'), {
       type:'pie',
       data:{ labels:['APRESENTADO','APROVADO'], datasets:[{ data:[totalApresentado, totalAprovado], backgroundColor:[varGet('--vermelho'), varGet('--azul')] }] },
       options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'bottom' }, title:{ display:true, text:'APRESENTADO × APROVADO — SET/25', color:varGet('--texto'), font:{ size:18, weight:'bold' }, align:'center' } } }
     });
 
-    // ===== Gráfico 3: Barras Cronograma =====
     new Chart(document.getElementById('cronograma'), {
       type:'bar',
       data:{
@@ -255,11 +345,8 @@
       options:{ responsive:true, maintainAspectRatio:false, scales:{ y:{ beginAtZero:true, max:100, ticks:{ callback:v=>v+'%' } } }, plugins:{ legend:{ position:'bottom' }, title:{ display:true, text:'CRONOGRAMA CRÍTICO', color:varGet('--texto'), font:{ size:18, weight:'bold' }, align:'center' } } }
     });
 
-    // ================== Informações de Engenharia (dropdown) ==================
     const engInfoMap = {
-      medicoes: {
-        titulo: "Medições do Mês",
-        html: `
+      medicoes: { titulo: "Medições do Mês", html: `
           <div class="eng-kpi">
             <div class="kpi"><b>Apresentado</b> R$ 835.119,52</div>
             <div class="kpi"><b>NF Liberada</b> R$ 324.333,27</div>
@@ -274,12 +361,8 @@
           <ul>
             <li><b>Total</b>: Apresentado <b>R$ 835.119,52</b> · NF <b>R$ 324.333,27</b> · Diferença <b>R$ 510.786,25</b></li>
           </ul>
-        `
-      },
-
-      aditivos: {
-        titulo: "Aditivos em Negociação",
-        html: `
+        ` },
+      aditivos: { titulo: "Aditivos em Negociação", html: `
           <ul>
             <li>1) Ralos do embasamento – parte 2 — <b>PACS-01_2025</b></li>
             <li>2) Instalação de caixas elétricas e módulos elétricos — <b>PACS-02_2025</b></li>
@@ -291,12 +374,8 @@
           <div class="eng-kpi" style="margin-top:8px;">
             <div class="kpi" style="grid-column:1 / -1;"><b>Total em negociação</b> R$ 337.000,00</div>
           </div>
-        `
-      },
-
-      adicionais_identificados: {
-        titulo: "Adicionais identificados (não negociados)",
-        html: `
+        ` },
+      adicionais_identificados: { titulo: "Adicionais identificados (não negociados)", html: `
           <ul>
             <li>7) Retrabalhos c/ instalações de gás — <b>PACS-07_2025</b> — <b>R$ 23.998,42</b></li>
             <li>8) Ajustes barramentos blindados (≈ 50 peças) — <b>PACS-08_2025</b> — <b>R$ 67.412,29</b></li>
@@ -307,12 +386,8 @@
             <li>10*) Restante cabos furtados/componentes — <i>não apresentado</i> (em levantamento)</li>
             <li>11*) Redutoras de pressão bl2 — <i>não apresentado</i> (aguardando definição)</li>
           </ul>
-        `
-      },
-
-      custos_extras: {
-        titulo: "Custos Extras Registrados",
-        html: `
+        ` },
+      custos_extras: { titulo: "Custos Extras Registrados", html: `
           <ul>
             <li>Roubos de cabos — boletins registrados — <b>R$ 95.000,00</b></li>
             <li>Retrabalhos — ajustes em painéis — <b>R$ 20.000,00</b></li>
@@ -321,12 +396,8 @@
           <div class="eng-kpi" style="margin-top:8px;">
             <div class="kpi" style="grid-column:1 / -1;"><b>Total</b> R$ 150.000,00</div>
           </div>
-        `
-      },
-
-      materiais_pendentes: {
-        titulo: "Materiais Críticos Pendentes",
-        html: `
+        ` },
+      materiais_pendentes: { titulo: "Materiais Críticos Pendentes", html: `
           <ul>
             <li><b>Barramentos blindados</b> — sem previsão (Patrimar)</li>
             <li><b>Cabos 240 mm²</b> — aguardando compra da Patrimar (cabo emprestado)</li>
@@ -334,34 +405,22 @@
             <li><b>PVC</b> pendente</li>
             <li><b>PPR</b> — fechamento casa de bombas</li>
           </ul>
-        `
-      },
-
-      entregas_previstas: {
-        titulo: "Entrega Prevista",
-        html: `
+        ` },
+      entregas_previstas: { titulo: "Entrega Prevista", html: `
           <ul>
             <li>Itens de QDLs</li>
             <li>PVC e PPR</li>
             <li>Insumos em geral</li>
           </ul>
-        `
-      },
-
-      avanco_fisico: {
-        titulo: "Avanço Físico (%)",
-        html: `
+        ` },
+      avanco_fisico: { titulo: "Avanço Físico (%)", html: `
           <div class="eng-kpi">
             <div class="kpi"><b>Planejado</b> 85%</div>
             <div class="kpi"><b>Real</b> 70%</div>
           </div>
           <ul><li>Desvio atual: <b>-15 p.p.</b></li></ul>
-        `
-      },
-
-      atividades_criticas: {
-        titulo: "Atividades Críticas da Semana",
-        html: `
+        ` },
+      atividades_criticas: { titulo: "Atividades Críticas da Semana", html: `
           <ul>
             <li>Entrega de apartamentos (metais e espelhos de tomadas)</li>
             <li>Redes do subsolo (hidráulica e sanitária)</li>
@@ -369,63 +428,39 @@
             <li>Tês de fachada</li>
             <li>Redutoras bloco 3</li>
           </ul>
-        `
-      },
-
-      prazo_est_x_plan: {
-        titulo: "Prazo Estimado x Planejado",
-        html: `
+        ` },
+      prazo_est_x_plan: { titulo: "Prazo Estimado x Planejado", html: `
           <div class="eng-kpi">
             <div class="kpi"><b>Planejado</b> novembro</div>
             <div class="kpi"><b>Estimado</b> maio/26</div>
           </div>
           <ul><li>Atraso aproximado: ~6 meses</li></ul>
-        `
-      },
-
-      frentes_paradas: {
-        titulo: "Frentes Paradas",
-        html: `
+        ` },
+      frentes_paradas: { titulo: "Frentes Paradas", html: `
           <ul>
             <li>Status: <b>a verificar em 15/09</b></li>
           </ul>
-        `
-      },
-
-      efetivo_atual: {
-        titulo: "Efetivo Atual",
-        html: `
+        ` },
+      efetivo_atual: { titulo: "Efetivo Atual", html: `
           <ul>
             <li><i>Não informado</i></li>
           </ul>
-        `
-      }
+        ` }
     };
 
-    // Render inicial e reação à mudança
     function renderEngInfo() {
       const sel = document.getElementById('engInfoSelect');
       const box = document.getElementById('engInfoContent');
-      const key = sel.value;
-      const item = engInfoMap[key];
+      const key = sel.value; const item = engInfoMap[key];
       box.innerHTML = item ? `<h3>${item.titulo}</h3>${item.html}` : "";
     }
-
     document.addEventListener('DOMContentLoaded', () => {
       const sel = document.getElementById('engInfoSelect');
-      if (sel) {
-        renderEngInfo();
-        sel.addEventListener('change', renderEngInfo);
-      }
+      if (sel) { renderEngInfo(); sel.addEventListener('change', renderEngInfo); }
     });
 
-    // Utilitários de cor
     function varGet(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
-    function hexA(hex, alpha){
-      const m = hex.replace('#','');
-      const r = parseInt(m.substring(0,2),16), g = parseInt(m.substring(2,4),16), b = parseInt(m.substring(4,6),16);
-      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-    }
+    function hexA(hex, alpha){ const m = hex.replace('#',''); const r=parseInt(m.substring(0,2),16), g=parseInt(m.substring(2,4),16), b=parseInt(m.substring(4,6),16); return `rgba(${r}, ${g}, ${b}, ${alpha})`; }
   </script>
 </body>
 </html>
